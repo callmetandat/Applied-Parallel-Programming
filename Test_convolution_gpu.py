@@ -1,5 +1,5 @@
 import numpy as np
-from model_numba.Layers import Convolution2D_GPU
+from model_numba.layers_cuda.layer import Convolution2D_GPU
 import math
 
 # Define constants for testing

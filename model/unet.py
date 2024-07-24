@@ -42,8 +42,6 @@ class Up(nn.Module):
 		x = self.up(inputTensor)
 		return self.double_conv(torch.cat([x, skipTensor],1))
 
-
-
 class Down(nn.Module):
 	def __init__(self,input_channel: int, output_channel: int) -> None:
 		super().__init__()
@@ -55,10 +53,6 @@ class Down(nn.Module):
 	def forward(self, data: Tensor):
 		return self.max_pooling_and_conv(data)
 		
-
-
-
-
 class U_net(nn.Module):
 	"""
 	U-Net model for image segmentation
