@@ -2,11 +2,7 @@ from model_numba.Layers.init import *
 
 @cuda.jit
 def tileSharedConv2D_kernel(img, out_img, weight, bias, channel_in: int, channel_out: int, batch_size: int):
-    """
-    This function is kernel of ...
-    Param
-    
-    """
+
     _, _, z_idx = cuda.grid(3)
 
     batch_idx, out_channel_idx = z_idx // channel_out, z_idx % channel_out
