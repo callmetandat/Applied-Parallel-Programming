@@ -11,7 +11,7 @@ KERNEL_SIZE = 2
 #OUTPUT_TILE_SIZE = BLOCK_SIZE - KERNEL_SIZE + 1
 
 @cuda.jit
-def TransposeConv2D_kernel(in_img, out_img, weight, bias, channel_in: int, channel_out: int):
+def TransposeConv2D_kernel(in_img, out_img, weight, bias, channel_in: int, channel_out: int, batch_size: int):
     """
     
     """
