@@ -1,7 +1,7 @@
 from model_numba.Layers.init import *
 
 
-@cuda.jit(device= True)
+@cuda.jit(device= True, inline= True)
 def filter_multiply(in_arr):
     out = [0.0] * 4
     out[0] = in_arr[0]
@@ -77,6 +77,9 @@ def wino_filter_transform(g: np.ndarray, filter_transform: any, in_channel: int,
         if (global_channel_idx < NUM_KERNEL):
             filter_transform[offset * NUM_KERNEL + global_channel_idx] = shared_g[channel_idx, row_idx, col_idx]
             
+
+
+
 
 
 

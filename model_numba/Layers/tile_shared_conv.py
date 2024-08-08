@@ -42,21 +42,21 @@ def tileSharedConv2D_kernel(img, out_img, weight, bias, channel_in: int, channel
         out_img[batch_idx, out_channel_idx, row_out, col_out] = outPixel
 
 
-def Convolution2D_GPU(img: Union[np.ndarray, any], weight, bias):
+def Convolution2D_GPU(img: Union[np.ndarray, DeviceNDArray], weight: np.ndarray, bias: np.ndarray, convert_to_host: bool = False):
     IMG_WIDTH, IMG_HEIGHT = img.shape[3], img.shape[2]
     BATCH_SIZE = img.shape[0]
     IN_CHANNEL, OUT_CHANNEL = weight.shape[1], weight.shape[0]
 
     threadPerBlock = (BLOCKSIZE, BLOCKSIZE)
     blockPerGrid = (math.ceil(IMG_WIDTH / OUTPUT_TILE_SIZE), math.ceil(IMG_HEIGHT / OUTPUT_TILE_SIZE), BATCH_SIZE * OUT_CHANNEL)
-    with cuda.pinned(img, weight, bias):
-        d_img = cuda.to_device(img)
+    with cuda.pinned( weight, bias):
+        d_img = cuda.to_device(img) if isinstance(img, np.ndarray) else img
         d_out_img = cuda.device_array(shape=(BATCH_SIZE, OUT_CHANNEL, IMG_HEIGHT, IMG_WIDTH), dtype= img.dtype)
         d_weight = cuda.to_device(weight)
         d_bias = cuda.to_device(bias)
 
         tileSharedConv2D_kernel[blockPerGrid, threadPerBlock](d_img, d_out_img, d_weight, d_bias, IN_CHANNEL, OUT_CHANNEL, BATCH_SIZE)
 
-        out_img = d_out_img.copy_to_host()
+        out_img = d_out_img.copy_to_host() if convert_to_host else d_out_img
 
     return out_img

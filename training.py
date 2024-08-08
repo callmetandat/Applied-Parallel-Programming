@@ -8,8 +8,11 @@ from torch.cuda.amp import autocast, GradScaler
 from dataset.HumanLoader import HumanMattingDataset
 from model.unet import U_net
 from tqdm import tqdm
+from model.Dice_Loss import DiceLoss
 
 model = U_net(1).to('cuda')
+
+model.load_state_dict(torch.load(r'weights/weights.pth'))
 
 train_dataset = HumanMattingDataset(split='train')
 val_dataset = HumanMattingDataset(split='val')  # Initialize validation dataset
@@ -17,7 +20,7 @@ val_dataset = HumanMattingDataset(split='val')  # Initialize validation dataset
 train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=8, shuffle=False)  # Initialize validation dataloader
 
-criterion = nn.BCEWithLogitsLoss()
+criterion = DiceLoss() #nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 scaler = GradScaler()
 

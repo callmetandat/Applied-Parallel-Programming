@@ -5,3 +5,5 @@ from model_numba.Layers.ReLu import RELU_GPU
 from model_numba.Layers.batchNorm2D import batchNorm2D
 
 from model_numba.Layers.MaxPooling2D import MaxPooling2D_GPU
+from model_numba.Layers.transpose_conv import TransposeConvol2D_GPU
+from model_numba.Layers.conv_1d_kernel import Conv_1D_Filter_GPU
