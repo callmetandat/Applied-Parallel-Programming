@@ -39,8 +39,10 @@ class Up(nn.Module):
 		skipTensor: take from Down Conv Layer for concatenate step
 		"""
 
-		x = self.up(inputTensor)
+		x = self.up(inputTensor) 
 		return self.double_conv(torch.cat([x, skipTensor],1))
+
+
 
 class Down(nn.Module):
 	def __init__(self,input_channel: int, output_channel: int) -> None:
@@ -53,6 +55,10 @@ class Down(nn.Module):
 	def forward(self, data: Tensor):
 		return self.max_pooling_and_conv(data)
 		
+
+
+
+
 class U_net(nn.Module):
 	"""
 	U-Net model for image segmentation
@@ -87,16 +93,16 @@ class U_net(nn.Module):
 			Tensor: Segmentation logits for each pixel class.
 		"""
 		# Encoder
-		d1 = self.down_1(img)
-		d2 = self.down_2(d1)
-		d3 = self.down_3(d2)
-		d4 = self.down_4(d3)
-		d5 = self.down_5(d4)
+		self.d1 = self.down_1(img)
+		self.d2 = self.down_2(self.d1)
+		self.d3 = self.down_3(self.d2)
+		self.d4 = self.down_4(self.d3)
+		self.d5 = self.down_5(self.d4)
 		# Decoder
-		u = self.up_1(d5, d4)
-		u = self.up_2(u, d3)
-		u = self.up_3(u, d2)
-		u = self.up_4(u, d1)
+		self.u1 = self.up_1(self.d5, self.d4)
+		self.u2 = self.up_2(self.u1, self.d3)
+		self.u3 = self.up_3(self.u2, self.d2)
+		self.u4 = self.up_4(self.u3, self.d1)
 
-		out= self.out(u)
+		out = self.out(self.u4)
 		return out
