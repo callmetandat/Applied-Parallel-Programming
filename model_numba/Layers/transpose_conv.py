@@ -6,34 +6,31 @@ from typing import Union
 
 BLOCK_SIZE = 16
 KERNEL_SIZE = 2
-#KERNEL_SIZE_AS_1D_ARR = KERNEL_SIZE * KERNEL_SIZE
-#INPUT_TILE_SIZE = BLOCK_SIZE
-#OUTPUT_TILE_SIZE = BLOCK_SIZE - KERNEL_SIZE + 1
+STRIDE = 2
 
 @cuda.jit
 def TransposeConv2D_kernel(in_img, out_img, weight, bias, channel_in: int, channel_out: int, batch_size: int):
     """
     
     """
-    _, _, z_idx = cuda.grid(3)
-    col, row = cuda.threadIdx.x, cuda.threadIdx.y
+    col, row, z_idx = cuda.grid(3)
+    #col, row = cuda.threadIdx.x, cuda.threadIdx.y
     
-    #input_height, input_width = in_img.shape[2], in_img.shape[3]
     output_height, output_width = out_img.shape[2], out_img.shape[3]
-      
-    start_col = col * 2 - (KERNEL_SIZE // 2)
-    start_row =  row * 2 - (KERNEL_SIZE // 2)
+    
+    #block_col = cuda.blockIdx.x * BLOCK_SIZE
+    #block_row = cuda.blockIdx.y 
+    start_col = cuda.threadIdx.x * STRIDE - (KERNEL_SIZE // 2)
+    start_row = cuda.threadIdx.y * STRIDE - (KERNEL_SIZE // 2)
     
     batch_idx, out_channel_idx = z_idx // channel_out, z_idx % channel_out
     
     outPixel = bias[out_channel_idx]
     
-    for in_channel_idx in range(channel_in):
-        if (col <= output_width) and (row <= output_height):            
-            for r in range(KERNEL_SIZE):
-                for c in range(KERNEL_SIZE): 
-                    if((start_row >= 0) and (start_row < output_height) and (start_col >= 0) and (start_col < output_width)):
-                        outPixel = in_img[batch_idx, in_channel_idx, start_row, start_col] * weight[out_channel_idx, in_channel_idx, r, c]
+    if (col <= output_width) and (row <= output_height):  
+        for in_channel_idx in range(channel_in):
+            #if((start_row >= 0) and (start_row < output_height) and (start_col >= 0) and (start_col < output_width)):
+            outPixel += in_img[batch_idx, in_channel_idx, start_row, start_col] * weight[in_channel_idx, out_channel_idx, start_row, start_col] 
        
     out_img[batch_idx, out_channel_idx, start_row, start_col] = outPixel
                                 
