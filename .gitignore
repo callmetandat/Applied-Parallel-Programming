@@ -1,0 +1,10 @@
+__pycache__/
+temp/
+datasets/
+*.pyc 
+image/
+/Test_convolution_cpu.py 
+/Test_convolution_gpu.py 
+/Test_transpose.py 
+/Test.ipynb
+

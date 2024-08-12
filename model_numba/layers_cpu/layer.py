@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit, prange
 
 class ConvolutionalLayer:
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, weights=None, bias=None):
@@ -12,6 +13,7 @@ class ConvolutionalLayer:
         self.weights = weights if weights is not None else np.random.randn(out_channels, in_channels, kernel_size, kernel_size)
         self.bias = bias if bias is not None else np.zeros((out_channels,))
 
+    @jit
     def forward(self, input_data):
         batch_size, in_channels, input_height, input_width = input_data.shape
         output_height = int((input_height + 2 * self.padding - self.kernel_size) / self.stride) + 1
@@ -22,10 +24,10 @@ class ConvolutionalLayer:
         if self.padding > 0:
             input_data = np.pad(input_data, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
 
-        for b in range(batch_size):
-            for c in range(self.out_channels):
-                for h in range(output_height):
-                    for w in range(output_width):
+        for b in prange(batch_size):
+            for c in prange(self.out_channels):
+                for h in prange(output_height):
+                    for w in prange(output_width):
                         h_start = h * self.stride
                         h_end = h_start + self.kernel_size
                         w_start = w * self.stride
