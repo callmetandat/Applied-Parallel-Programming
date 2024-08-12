@@ -1,15 +1,29 @@
 from model_numba.Layers.init import *
 
 @cuda.jit
-def ReLU(img, out_img):
-    batch_idx = cuda.blockIdx.z // img.shape[1]
-    in_channel_idx = cuda.blockIdx.z % img.shape[1]
+def relu_kernel(data, batch_size, channels, img_width, img_height):
+    idx = cuda.grid(1)
+    total_elements = batch_size * channels * img_width * img_height
 
-    # out_x = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x
-    # out_y = cuda.blockIdx.y * cuda.blockDim.y + cuda.threadIdx.y
+    if idx < total_elements:
+        b = idx // (channels * img_width * img_height)
+        c = (idx % (channels * img_width * img_height)) // (img_width * img_height)
+        w = (idx % (img_width * img_height)) // img_height
+        h = idx % img_height
+        data[b, c, w, h] = max(data[b, c, w, h], 0)
 
-    out_x, out_y = cuda.grid(2)
 
-    if out_x < img.shape[3] and out_y < img.shape[2] and cuda.blockIdx.z < img.shape[0]* img.shape[1]:
-        out_img[batch_idx, in_channel_idx, out_y, out_x] = math.max(0, img[batch_idx, in_channel_idx, out_y, out_x])
+def RELU_GPU(data):
+    d_data = cuda.to_device(data)
+
+    batch_size, channels, img_width, img_height = data.shape
+    total_elements = batch_size * channels * img_width * img_height
+    threads_per_block = 256
+    blocks_per_grid = (total_elements + threads_per_block - 1) // threads_per_block
+    
+    relu_kernel[blocks_per_grid, threads_per_block](d_data, batch_size, channels, img_width, img_height)
+    out_put = d_data.copy_to_host()
+    return out_put
+
+
 

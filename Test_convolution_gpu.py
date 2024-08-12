@@ -35,7 +35,7 @@ dr_conv = ConvolutionalLayer(IN_CHANNELS,OUT_CHANNELS, KERNEL_SIZE, weights= ker
 times = []
 
 start = time.time()
-cuda_out = dr_conv.forward(image)
+#cuda_out = dr_conv.forward(image)
 end = time.time()
 cpu_time = end - start
 print("Direct CPU time:", cpu_time)
