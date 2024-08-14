@@ -21,14 +21,13 @@ def main():
                
         # Load image and mask
         img = load_img(str(uploaded_file.name))
-        #mask = load_img('mask.png',True)
         
         # Draw a dividing line
         st.divider()
         st.markdown("#### :violet[2. Portrait Mask]")
-        mask = create_mask(img, u_net)
-        #mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)    
+        mask = create_mask(img, u_net) 
         st.image(mask)
+        
         # Select available background
         bg = image_select(
             label="Select a background",
