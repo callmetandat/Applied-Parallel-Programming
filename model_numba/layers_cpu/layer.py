@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit, prange
 
 class ConvolutionalLayer:
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, weights=None, bias=None):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0, weights=None, bias=None):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = kernel_size

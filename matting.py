@@ -21,7 +21,6 @@ def load_img(file_path, mask:bool=False):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    #img = cv2.resize(img, (512, 512))
     return img
 
 def create_mask(img, model):

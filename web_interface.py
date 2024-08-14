@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_image_select import image_select
 from streamlit_image_comparison import image_comparison
 from matting import *
+from io import BytesIO
 
 def main():
     # Set title for the App
@@ -47,7 +48,11 @@ def main():
             image_comparison(
                 img1= res,
                 img2= img
-            )
-        
+            )  
+            res = cv2.cvtColor(res, cv2.COLOR_RGB2BGR)           
+            _, encoded_res = cv2.imencode('.jpg', res)
+            res = encoded_res.tobytes()
+            st.download_button("Download Result",data=res,file_name="result.jpg",mime="image/jpg")
+                  
 if __name__ == "__main__":
     main()

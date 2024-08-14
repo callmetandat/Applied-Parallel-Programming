@@ -1,11 +1,11 @@
+import numpy as np
+import torch
 from torch.nn import Module
 from torch import Tensor
 from torchvision import transforms
-import torch
-import numpy as np
 from typing import Union
-from model_numba.Layers.Layers import *
 from numba import cuda
+from model_numba.Layers.Layers import *
 
 import torch.nn.functional as F
 
@@ -97,7 +97,6 @@ class UP(Module):
         if state_dict is not None:
             self.weight = state_dict[f'{prefix}.up.weight'].cpu().numpy()
             self.bias = state_dict[f'{prefix}.up.bias'].cpu().numpy()
-
 
             self.conv1_weight = state_dict[f'{prefix}.double_conv.double_conv.0.weight'].cpu().numpy()
             self.conv1_bias = state_dict[f'{prefix}.double_conv.double_conv.0.bias'].cpu().numpy()

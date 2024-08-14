@@ -23,26 +23,13 @@ class Up(nn.Module):
 		self.up = nn.ConvTranspose2d(in_channel, out_channel, kernel_size= 2, stride= 2)
 		self.double_conv = Double_Conv(in_channel, out_channel)
 
-	# def crop_and_concatenate(self, tensor: Tensor, targetTensor: Tensor):
-	# 	"""
-	# 	Crop and concatenate two tensor for skip connection step
-	# 	"""
-	# 	delta_width = (tensor.size()[2] - targetTensor.size()[2])//2
-	# 	delta_heigh = (tensor.size()[3] - targetTensor.size()[3])//2
-
-	# 	tensor = tensor[:,:, delta_width: tensor.size()[2]- delta_width, delta_heigh: tensor.size()[3]- delta_heigh]
-	# 	return torch.cat([tensor, targetTensor], 1)
-		
 	def forward(self, inputTensor: Tensor, skipTensor: Tensor):
 		"""
 		inputTensor: input Tensor for Transpose Conv
 		skipTensor: take from Down Conv Layer for concatenate step
 		"""
-
 		x = self.up(inputTensor) 
 		return self.double_conv(torch.cat([x, skipTensor],1))
-
-
 
 class Down(nn.Module):
 	def __init__(self,input_channel: int, output_channel: int) -> None:
@@ -55,10 +42,6 @@ class Down(nn.Module):
 	def forward(self, data: Tensor):
 		return self.max_pooling_and_conv(data)
 		
-
-
-
-
 class U_net(nn.Module):
 	"""
 	U-Net model for image segmentation
