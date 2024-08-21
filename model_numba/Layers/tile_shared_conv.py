@@ -43,8 +43,6 @@ def tileSharedConv2D_kernel(img, out_img, weight, bias, channel_in: int, channel
 
 
 def Convolution2D_GPU(img: Union[np.ndarray, DeviceNDArray], weight: np.ndarray, bias: np.ndarray, convert_to_host: bool = False):
-    import time
-    time.sleep(0.2)
     IMG_WIDTH, IMG_HEIGHT = img.shape[3], img.shape[2]
     BATCH_SIZE = img.shape[0]
     IN_CHANNEL, OUT_CHANNEL = weight.shape[1], weight.shape[0]

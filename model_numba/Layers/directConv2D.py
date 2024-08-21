@@ -21,8 +21,6 @@ def directConv2D_kernel(img, output, weight, bias, in_channel, out_channel, batc
 
 
 def DirectConv2DGPU(img, weight, bias, convert_to_host=False):
-    import time
-    time.sleep(0.4)
     BATCH_SIZE, IN_CHANNEL, HEIGHT, WIDTH = img.shape
     OUT_CHANNEL = weight.shape[0]
     PADDING = 1
