@@ -66,6 +66,46 @@ class Double_Conv(Module):
 
         return outConv_2
     
+class Original_Double_Conv(Module):
+    def __init__(self, in_channel: int, out_channel: int, state_dict = None,prefix: str = "", isMaxPooling: bool = False) -> None:
+        super().__init__()
+
+        self.useMaxPooling = isMaxPooling
+        
+        self.in_channel = in_channel
+        self.out_channel = out_channel
+        if state_dict is not None:
+            self.conv1_weight = state_dict[f'{prefix}.double_conv.0.weight'].cpu().numpy()
+            self.conv1_bias = state_dict[f'{prefix}.double_conv.0.bias'].cpu().numpy()
+            self.conv1_norm_weight = state_dict[f'{prefix}.double_conv.1.weight'].cpu().numpy()
+            self.conv1_norm_bias = state_dict[f'{prefix}.double_conv.1.bias'].cpu().numpy()
+            self.conv1_norm_mean = state_dict[f'{prefix}.double_conv.1.running_mean'].cpu().numpy()
+            self.conv1_norm_var = state_dict[f'{prefix}.double_conv.1.running_var'].cpu().numpy()
+
+            self.conv2_weight = state_dict[f'{prefix}.double_conv.3.weight'].cpu().numpy()
+            self.conv2_bias = state_dict[f'{prefix}.double_conv.3.bias'].cpu().numpy()
+            self.conv2_norm_weight = state_dict[f'{prefix}.double_conv.4.weight'].cpu().numpy()
+            self.conv2_norm_bias = state_dict[f'{prefix}.double_conv.4.bias'].cpu().numpy()
+            self.conv2_norm_mean = state_dict[f'{prefix}.double_conv.4.running_mean'].cpu().numpy()
+            self.conv2_norm_var = state_dict[f'{prefix}.double_conv.4.running_var'].cpu().numpy()
+        else:
+            raise ValueError("State dictionary is required to initialize weights of double conv layer.")
+
+    def forward(self, img: Union[np.ndarray, DeviceNDArray]) -> Union[np.ndarray, DeviceNDArray]:
+        
+        out_MaxPool = MaxPooling2D_GPU(img, True) if self.useMaxPooling else img
+
+        outConv_1 = Convolution2D_GPU(out_MaxPool, self.conv1_weight, self.conv1_bias, True)
+        outConv_1 = batchNorm2D(outConv_1, self.conv1_norm_weight, self.conv1_norm_bias, self.conv1_norm_mean, self.conv1_norm_var)
+        outConv_1 = RELU_GPU(outConv_1)
+
+        outConv_2 = Convolution2D_GPU(outConv_1, self.conv2_weight, self.conv2_bias, True)
+        outConv_2 = batchNorm2D(outConv_2, self.conv2_norm_weight, self.conv2_norm_bias, self.conv2_norm_mean, self.conv2_norm_var)
+        outConv_2 = RELU_GPU(outConv_2)
+        del out_MaxPool, outConv_1
+
+        return outConv_2
+    
 class Transpose_Conv2D(Module):
     def __init__(self, channel_in: int, channel_out: int, state_dict = None,prefix: str = "") -> None:
         super().__init__()

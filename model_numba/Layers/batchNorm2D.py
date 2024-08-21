@@ -18,12 +18,12 @@ def batchNorm2D(img, weight, bias, mean, variance, epsilon=1e-5):
     out_img = np.zeros_like(img, dtype=np.float32)
 
     # Allocate device memory
-    d_img = cuda.to_device(img.astype(np.float32))
+    d_img = cuda.to_device(img)
     d_out_img = cuda.device_array_like(img)
-    d_weight = cuda.to_device(weight.astype(np.float32))
-    d_bias = cuda.to_device(bias.astype(np.float32))
-    d_mean = cuda.to_device(mean.astype(np.float32))
-    d_variance = cuda.to_device(variance.astype(np.float32))
+    d_weight = cuda.to_device(weight)
+    d_bias = cuda.to_device(bias)
+    d_mean = cuda.to_device(mean)
+    d_variance = cuda.to_device(variance)
 
     threadsperblock = (16, 16)
     blockspergrid_x = math.ceil(width / threadsperblock[0])
